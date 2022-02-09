@@ -242,7 +242,8 @@ class MPMSimulator:
             self.x[f + 1, p] = ti.max(ti.min(self.x[f, p] + self.dt * self.v[f + 1, p], 1.-3*self.dx), 0.)
             # advection and preventing it from overflow
 
-    @ti.complex_kernel
+    #@ti.complex_kernel renamed to 
+    @ti.ad.grad_replaced
     def substep(self, s):
         # centroids[None] = [0, 0] # manually clear the centroids...
         self.clear_grid()
@@ -257,7 +258,8 @@ class MPMSimulator:
         self.g2p(s)
 
 
-    @ti.complex_kernel_grad(substep)
+    #@ti.complex_kernel_grad(substep)
+    @ti.ad.grad_for(substep)
     def substep_grad(self, s):
         self.clear_grid()
         self.clear_SVD_grad()  # clear the svd grid
