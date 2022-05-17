@@ -254,7 +254,8 @@ class Renderer:
                     for i in ti.static(range(len(self.primitives))):
                         if sdf_id == i:
                             normal = ti.cast(self.primitives[i].normal(0, o + dist*d), ti.f32)
-                            color = self.primitives[i].color
+                            #color = self.primitives[i].color
+                            color = ti.Vector([0.6, 0.7, 0.7])
                     roughness = 0.
                     material = DIFFUSE
 

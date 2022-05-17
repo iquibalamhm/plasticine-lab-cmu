@@ -47,7 +47,7 @@ def main():
     args = get_args()
     if args.num_steps is None:
         if args.algo in DIFF_ALGOS:
-            args.num_steps = 50 * 200
+            args.num_steps = 50*20
         else:
             args.num_steps = 500000
 
