@@ -1,7 +1,14 @@
 import numpy as np
 import cv2
 import taichi as ti
-
+def benchmark(func): 
+    import time      
+    def wrapper(*args, **kwargs):          
+        t = time.perf_counter()          
+        res = func(*args, **kwargs)          
+        print(func.__name__, time.perf_counter()-t)          
+        return res      
+    return wrapper 
 # TODO: run on GPU, fast_math will cause error on float64's sqrt; removing it cuases compile error..
 ti.init(arch=ti.gpu, debug=False, fast_math=True)
 
@@ -56,13 +63,49 @@ class TaichiEnv:
         self.simulator.reset(self.init_particles)
         if self.loss:
             self.loss.clear()
-
+    
+    @benchmark
     def render(self, mode='human', **kwargs):
+        import time
+        tic = time.perf_counter()       
         assert self._is_copy, "The environment must be in the copy mode for render ..."
         if self.n_particles > 0:
             x = self.simulator.get_x(0)
             self.renderer.set_particles(x, self.particle_colors)
+        toc = time.perf_counter()
+        print(f"Set particle colors in {toc - tic:0.4f} seconds")
+        tic = time.perf_counter()
         img = self.renderer.render_frame(shape=1, primitive=1, **kwargs)
+        toc = time.perf_counter()
+        print(f"InRedender in {toc - tic:0.4f} seconds")
+        
+        img = np.uint8(img.clip(0, 1) * 255)
+
+        if mode == 'human':
+            cv2.imshow('x', img[..., ::-1])
+            cv2.waitKey(1)
+        elif mode == 'plt':
+            import matplotlib.pyplot as plt
+            plt.imshow(img)
+            plt.show()
+        else:
+            return img
+
+    def render_simple(self, mode='human', **kwargs):
+        assert self._is_copy, "The environment must be in the copy mode for render ..."
+        if self.n_particles > 0:
+            x = self.simulator.get_x(0)
+
+            self.renderer.set_particles(x, self.particle_colors)
+        import time
+        tic = time.perf_counter()
+    
+
+        img = self.renderer.render_frame(shape=1, primitive=1, **kwargs)
+        
+        toc = time.perf_counter()
+        print(f"InRedender in {toc - tic:0.4f} seconds")
+        
         img = np.uint8(img.clip(0, 1) * 255)
 
         if mode == 'human':

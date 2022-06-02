@@ -17,6 +17,14 @@ exposure = 1.5
 light_direction_noise = 0.03
 light_color = [1.0, 1.0, 1.0]
 
+def benchmark(func): 
+    import time      
+    def wrapper(*args, **kwargs):          
+        t = time.perf_counter()          
+        res = func(*args, **kwargs)          
+        print(func.__name__, time.perf_counter()-t)          
+        return res      
+    return wrapper 
 
 @ti.data_oriented
 class Renderer:
@@ -343,7 +351,7 @@ class Renderer:
         coeff1 = ti.max(ti.min(coeff1, 1.), 0.)
         light = coeff1 * ti.Vector([0.9, 0.9, 0.9]) + (1. - coeff1) * ti.Vector([0.7, 0.7, 0.8])
         return light * 1.5
-
+    @benchmark
     @ti.func
     def trace(self, pos, d):
         contrib = ti.Vector([0.0, 0.0, 0.0])
@@ -479,21 +487,24 @@ class Renderer:
         # reset ..
         self.volume.fill(int((1<<31)-1))
         self.build_sdf_from_particles()
-
+    
     def render_frame(self, spp=None, **kwargs):
         if spp is None:
             spp = self.spp
 
         last_t = 0
-        visualize_target = kwargs.get('target', 0)
+        visualize_target = kwargs.get('target', 0) #1 to visualize, 0 to not
         self.visualize_shape[None] = kwargs.get('shape', 1)
         self.visualize_primitive[None] = kwargs.get('primitive', 1)
         self.color_buffer.fill(0)
-
+        print(spp)
         for i in range(1, 1 + spp):
             # Opacity=50%
             self.visualize_target[None] = int(i % 2 == 0) * visualize_target
+            tic = time.perf_counter()
             self.render()
+            toc = time.perf_counter()
+            print(f"rendered inside rendered.py {toc - tic:0.4f} seconds")
 
             interval = 20
             if i % interval == 0:

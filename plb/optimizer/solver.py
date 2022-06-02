@@ -81,21 +81,39 @@ class Solver:
         cfg.init_range = 0.
         cfg.init_sampler = 'uniform'
         return cfg
+import pickle
+def savesolver(solverobj,filename):
+    with open(filename, 'wb') as outp:
+        pickle.dump(solverobj, outp, pickle.HIGHEST_PROTOCOL)
 
-
+def loadsolver(filename):
+    with open(filename, 'rb') as inp:
+        solver = pickle.load(inp)
+    return solver
 def solve_action(env, path, logger, args):
     import os, cv2
     os.makedirs(path, exist_ok=True)
     env.reset()
     taichi_env: TaichiEnv = env.unwrapped.taichi_env
     T = env._max_episode_steps
-    solver = Solver(taichi_env, logger, None,
+    if args.saveobj == True:
+        solver = Solver(taichi_env, logger, None,
                     n_iters=(args.num_steps + T-1)//T, softness=args.softness, horizon=T,
                     **{"optim.lr": args.lr, "optim.type": args.optim, "init_range": 0.0001})
-
-    action = solver.solve()
-
+        action = solver.solve()
+        savesolver(action,'savedobj.pkl')
+    if args.loadobj == True:
+        action = loadsolver('savedobj.pkl')
+    import time
     for idx, act in enumerate(action):
-        env.step(act)
+        tic = time.perf_counter()
+        obs,_,_,_= env.step(act)
+        toc = time.perf_counter()
+        print(f"set step in {toc - tic:0.4f} seconds")
+
         img = env.render(mode='rgb_array')
+        tic = time.perf_counter()
+        print(f"rendered {idx} in {tic - toc:0.4f} seconds")
+        
         cv2.imwrite(f"{path}/{idx:04d}.png", img[..., ::-1])
+        print('\n')

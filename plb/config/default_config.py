@@ -37,7 +37,8 @@ _C.SHAPES = list()
 # RENDERER
 # ---------------------------------------------------------------------------- #
 _C.RENDERER = RENDERER = CN()
-RENDERER.spp = 50
+#RENDERER.spp = 50
+RENDERER.spp = 1
 RENDERER.max_ray_depth = 2
 RENDERER.image_res = (512, 512)
 RENDERER.voxel_res = (168, 168, 168)
