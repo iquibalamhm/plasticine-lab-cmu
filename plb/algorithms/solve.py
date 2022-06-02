@@ -34,6 +34,11 @@ def get_args():
 
     parser.add_argument("--num_steps", type=int, default=None)
 
+    #save and load options
+    parser.add_argument("--saveobj", action='store_true')
+    parser.add_argument("--loadobj", action='store_true')
+
+
     # differentiable physics parameters
     parser.add_argument("--lr", type=float, default=0.1)
     parser.add_argument("--softness", type=float, default=666.)

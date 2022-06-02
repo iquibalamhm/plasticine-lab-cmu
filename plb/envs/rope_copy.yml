@@ -33,8 +33,8 @@ ENV:
   loss:
     target_path: envs/data/Rope3D-v1.npy
 RENDERER:
-  camera_pos: (0.5, 1.75, 0.55)
-  camera_rot: (1.57, 0.0)
+  camera_pos: (0.5, 2.5, 2.)
+  camera_rot: (1.0, 0.)
 VARIANTS:
   - PRIMITIVES:
       -
