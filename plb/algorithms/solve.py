@@ -6,9 +6,9 @@ import torch
 from plb.envs import make
 from plb.algorithms.logger import Logger
 
-from plb.algorithms.discor.run_sac import train as train_sac
-from plb.algorithms.ppo.run_ppo import train_ppo
-from plb.algorithms.TD3.run_td3 import train_td3
+#from plb.algorithms.discor.run_sac import train as train_sac
+#from plb.algorithms.ppo.run_ppo import train_ppo
+#from plb.algorithms.TD3.run_td3 import train_td3
 from plb.optimizer.solver import solve_action
 from plb.optimizer.solver_nn import solve_nn
 
