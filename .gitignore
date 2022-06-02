@@ -6,6 +6,7 @@ data
 *.avi
 *feh_*
 *.pkl
+!savedobj.pkl
 *__pycache__*
 *tmp*
 *.idea
